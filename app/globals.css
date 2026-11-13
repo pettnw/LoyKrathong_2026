@@ -1,26 +1,460 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-noto-thai), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-mali), var(--font-noto-thai), ui-serif, Georgia,
+    serif;
+
+  --color-night-950: #050818;
+  --color-night-900: #0a0f2a;
+  --color-night-800: #121a44;
+  --color-night-700: #1c2559;
+  --color-gold-200: #fef3c7;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: #050818;
+    color: #eef2ff;
+    font-family: var(--font-noto-thai), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: rgba(252, 211, 77, 0.35);
+    color: #fffbea;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------- ดาว / พระจันทร์ / โคมลอย ---------- */
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+.star {
+  animation: twinkle var(--twinkle-duration, 4s) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+}
+
+@keyframes moon-glow {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+}
+
+.moon-halo {
+  animation: moon-glow 7s ease-in-out infinite;
+}
+
+@keyframes lantern-rise {
+  0% {
+    transform: translate3d(0, 12vh, 0) scale(0.88);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.62;
+  }
+  100% {
+    transform: translate3d(var(--lantern-sway, 10px), -78vh, 0) scale(1.05);
+    opacity: 0;
+  }
+}
+
+.sky-lantern {
+  position: absolute;
+  width: var(--lantern-size, 10px);
+  height: calc(var(--lantern-size, 10px) * 1.32);
+  border-radius: 42% 42% 46% 46% / 32% 32% 58% 58%;
+  background: radial-gradient(
+    circle at 50% 24%,
+    #fff7cc,
+    #fbbf24 58%,
+    #f59e0b 88%
+  );
+  box-shadow:
+    0 0 14px 5px rgba(251, 191, 36, 0.32),
+    0 0 34px 10px rgba(245, 158, 11, 0.16);
+  animation: lantern-rise var(--lantern-duration, 26s) linear infinite;
+  animation-delay: var(--lantern-delay, 0s);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ---------- เปลวเทียน / ธูป ---------- */
+
+@keyframes flame-flicker {
+  0%,
+  100% {
+    transform: scale(1, 1) rotate(-1deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(0.94, 1.07) rotate(1.6deg);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scale(1.05, 0.96) rotate(-1.2deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.97, 1.04) rotate(1deg);
+    opacity: 0.95;
+  }
+}
+
+.krathong-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flame-flicker 1.4s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.candle-glow {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: glow-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes aura-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.05);
+  }
+}
+
+.flame-aura {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: aura-pulse 3.6s ease-in-out infinite;
+}
+
+@keyframes ember-pulse {
+  0%,
+  100% {
+    opacity: 0.68;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.incense-ember {
+  animation: ember-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes smoke-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 0.35;
+  }
+}
+
+.incense-smoke {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: smoke-drift 5.5s ease-in-out infinite;
+}
+
+/* ---------- กระทงลอย ---------- */
+
+@keyframes krathong-journey {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -45vh) scale(0.14);
+    opacity: 0;
+  }
+}
+
+@keyframes krathong-journey-reduced {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -5vh) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.krathong-journey {
+  transform: translate(-50%, 0) scale(1);
+  animation: krathong-journey var(--journey-duration, 18s)
+    cubic-bezier(0.42, 0, 0.58, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes krathong-sway {
+  0%,
+  100% {
+    transform: translateX(-9px);
+  }
+  50% {
+    transform: translateX(9px);
+  }
+}
+
+.krathong-sway {
+  animation: krathong-sway 6.4s ease-in-out infinite;
+}
+
+@keyframes krathong-bob {
+  0%,
+  100% {
+    transform: translateY(4px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.krathong-bob {
+  animation: krathong-bob 3.6s ease-in-out infinite;
+}
+
+@keyframes krathong-tilt {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.krathong-tilt {
+  animation: krathong-tilt 5.2s ease-in-out infinite;
+}
+
+@keyframes aura-glow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.krathong-aura {
+  transform-origin: 50% 50%;
+  animation: aura-glow 3.2s ease-in-out infinite alternate;
+}
+
+/* ---------- กระทงของคนอื่น ---------- */
+
+@keyframes other-drift {
+  0% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  100% {
+    transform: translate3d(5px, -6px, 0);
+  }
+}
+
+.other-drift {
+  animation: other-drift var(--drift-duration, 36s) ease-in-out infinite
+    alternate;
+  animation-delay: var(--drift-delay, 0s);
+}
+
+/* ---------- แม่น้ำ ---------- */
+
+@keyframes wave-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.wave-track {
+  position: absolute;
+  left: 0;
+  display: flex;
+  width: 200%;
+  animation: wave-slide var(--wave-duration, 26s) linear infinite;
+}
+
+@keyframes reflection-shimmer {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scaleX(0.9);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scaleX(1.06);
+  }
+}
+
+.reflection-shimmer {
+  transform-origin: top center;
+  animation: reflection-shimmer 6s ease-in-out infinite;
+}
+
+@keyframes water-sparkle {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateY(-2px) scale(1.15);
+  }
+}
+
+.water-particle {
+  animation: water-sparkle var(--particle-duration, 3.5s) ease-in-out infinite;
+  animation-delay: var(--particle-delay, 0s);
+}
+
+/* ---------- ข้อความ / UI ---------- */
+
+@keyframes blessing-fade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  76% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -4px);
+  }
+}
+
+.blessing {
+  transform: translate(-50%, 0);
+  animation: blessing-fade 9s ease-in-out forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.7s ease-out both;
+}
+
+/* ---------- เคารพ prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .star,
+  .sky-lantern,
+  .moon-halo,
+  .krathong-flame,
+  .candle-glow,
+  .flame-aura,
+  .incense-ember,
+  .incense-smoke,
+  .krathong-sway,
+  .krathong-bob,
+  .krathong-tilt,
+  .krathong-aura,
+  .other-drift,
+  .wave-track,
+  .reflection-shimmer,
+  .water-particle,
+  .fade-in-up {
+    animation: none !important;
+  }
+
+  .sky-lantern {
+    opacity: 0.55;
+  }
+
+  .blessing {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .krathong-journey {
+    animation-name: krathong-journey-reduced !important;
+  }
 }
