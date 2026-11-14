@@ -103,11 +103,6 @@ export function LoyKrathongApp() {
       });
   };
 
-  const handleRestart = () => {
-    setScene(null);
-    setOwnKrathongId(null);
-  };
-
   if (scene) {
     return (
       <RiverScene
@@ -116,7 +111,6 @@ export function LoyKrathongApp() {
         wish={scene.wish}
         type={scene.type}
         ownKrathongId={ownKrathongId}
-        onRestart={handleRestart}
       />
     );
   }

@@ -207,125 +207,96 @@
   animation: smoke-drift 5.5s ease-in-out infinite;
 }
 
-/* ---------- กระทงลอย ---------- */
+/* ---------- กระทงในน้ำ ---------- */
 
-@keyframes krathong-journey {
-  0% {
-    transform: translate(-50%, 0) scale(1);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  68% {
-    opacity: 1;
-  }
-  92% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate(-50%, -45vh) scale(0.14);
-    opacity: 0;
-  }
-}
-
-@keyframes krathong-journey-reduced {
-  0% {
-    transform: translate(-50%, 0) scale(1);
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate(-50%, -5vh) scale(0.9);
-    opacity: 0;
-  }
-}
-
-.krathong-journey {
-  transform: translate(-50%, 0) scale(1);
-  animation: krathong-journey var(--journey-duration, 18s)
-    cubic-bezier(0.42, 0, 0.58, 1) forwards;
-  will-change: transform, opacity;
-}
-
-@keyframes krathong-sway {
-  0%,
-  100% {
-    transform: translateX(-9px);
-  }
-  50% {
-    transform: translateX(9px);
-  }
-}
-
-.krathong-sway {
-  animation: krathong-sway 6.4s ease-in-out infinite;
-}
-
-@keyframes krathong-bob {
-  0%,
-  100% {
-    transform: translateY(4px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.krathong-bob {
-  animation: krathong-bob 3.6s ease-in-out infinite;
-}
-
-@keyframes krathong-tilt {
-  0%,
-  100% {
-    transform: rotate(-2deg);
-  }
-  50% {
-    transform: rotate(2deg);
-  }
-}
-
-.krathong-tilt {
-  animation: krathong-tilt 5.2s ease-in-out infinite;
-}
-
-@keyframes aura-glow {
+@keyframes water-drift {
   from {
-    opacity: 0.55;
-    transform: scale(0.94);
+    transform: translate3d(-7px, 0, 0);
+  }
+  to {
+    transform: translate3d(7px, -2px, 0);
+  }
+}
+
+.water-drift {
+  animation: water-drift var(--drift-duration, 36s) ease-in-out infinite
+    alternate;
+  animation-delay: var(--drift-delay, 0s);
+}
+
+@keyframes water-bob {
+  0%,
+  100% {
+    transform: translateY(1px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.water-bob {
+  animation: water-bob var(--bob-duration, 4.8s) ease-in-out infinite;
+  animation-delay: var(--bob-delay, 0s);
+}
+
+@keyframes water-ripple {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.45;
+  }
+  70% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.water-ripple {
+  animation: water-ripple 5.6s ease-out infinite;
+  animation-delay: var(--ripple-delay, 0s);
+}
+
+@keyframes water-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
   }
   to {
     opacity: 1;
-    transform: scale(1.08);
+    transform: scale(1);
   }
 }
 
-.krathong-aura {
-  transform-origin: 50% 50%;
-  animation: aura-glow 3.2s ease-in-out infinite alternate;
+.water-enter {
+  animation: water-enter 0.5s ease-out both;
 }
 
-/* ---------- กระทงของคนอื่น ---------- */
-
-@keyframes other-drift {
-  0% {
-    transform: translate3d(-4px, 0, 0);
-  }
-  100% {
-    transform: translate3d(5px, -6px, 0);
+@keyframes water-exit {
+  to {
+    transform: translateX(calc(var(--exit-dir, 1) * 78vw));
+    opacity: 0;
   }
 }
 
-.other-drift {
-  animation: other-drift var(--drift-duration, 36s) ease-in-out infinite
-    alternate;
-  animation-delay: var(--drift-delay, 0s);
+.water-exit {
+  animation: water-exit 2.6s ease-in forwards;
+}
+
+@keyframes wish-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wish-card {
+  animation: wish-card-in 0.16s ease-out both;
 }
 
 /* ---------- แม่น้ำ ---------- */
@@ -383,30 +354,6 @@
 
 /* ---------- ข้อความ / UI ---------- */
 
-@keyframes blessing-fade {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -10px);
-  }
-  10% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  76% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -4px);
-  }
-}
-
-.blessing {
-  transform: translate(-50%, 0);
-  animation: blessing-fade 9s ease-in-out forwards;
-}
-
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -433,11 +380,12 @@
   .flame-aura,
   .incense-ember,
   .incense-smoke,
-  .krathong-sway,
-  .krathong-bob,
-  .krathong-tilt,
-  .krathong-aura,
-  .other-drift,
+  .water-drift,
+  .water-bob,
+  .water-ripple,
+  .water-enter,
+  .water-exit,
+  .wish-card,
   .wave-track,
   .reflection-shimmer,
   .water-particle,
@@ -445,16 +393,11 @@
     animation: none !important;
   }
 
+  .water-exit {
+    opacity: 0;
+  }
+
   .sky-lantern {
     opacity: 0.55;
-  }
-
-  .blessing {
-    animation: none !important;
-    opacity: 1;
-  }
-
-  .krathong-journey {
-    animation-name: krathong-journey-reduced !important;
   }
 }

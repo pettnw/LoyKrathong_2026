@@ -9,6 +9,7 @@ import {
   type KrathongTypeId,
 } from "@/lib/krathong-data";
 import { KrathongSvg } from "@/components/krathong-svg";
+import { PrivacyNote } from "@/components/privacy-note";
 
 type KrathongPickerProps = {
   name: string;
@@ -238,9 +239,10 @@ export function KrathongPicker({
         </p>
       </form>
 
-      <p className="mt-6 text-center text-[11px] text-slate-400/80">
-        ลอยกระทงออนไลน์ · ขอให้ทุกคำอธิษฐานเป็นจริง
-      </p>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[11px] text-slate-400/80">
+        <span>ลอยกระทงออนไลน์ · ขอให้ทุกคำอธิษฐานเป็นจริง</span>
+        <PrivacyNote />
+      </div>
     </section>
   );
 }
