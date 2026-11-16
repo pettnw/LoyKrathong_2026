@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { HomeScene } from "@/components/home-scene";
 import { KrathongPicker } from "@/components/krathong-picker";
 import { NightSky } from "@/components/night-sky";
 import { RiverScene } from "@/components/river-scene";
@@ -17,7 +18,10 @@ type SceneState = {
   type: KrathongTypeId;
 };
 
+type View = "home" | "form" | "scene";
+
 export function LoyKrathongApp() {
+  const [view, setView] = useState<View>("home");
   const [name, setName] = useState("");
   const [wish, setWish] = useState("");
   const [selectedType, setSelectedType] = useState<KrathongTypeId | null>(
@@ -75,6 +79,7 @@ export function LoyKrathongApp() {
       wish: wishValidation.wish,
       type: selectedType,
     });
+    setView("scene");
 
     // บันทึกลง MongoDB แบบไม่บล็อกอนิเมชั่น
     void fetch("/api/krathong", {
@@ -103,7 +108,7 @@ export function LoyKrathongApp() {
       });
   };
 
-  if (scene) {
+  if (view === "scene" && scene) {
     return (
       <RiverScene
         key={scene.key}
@@ -115,20 +120,24 @@ export function LoyKrathongApp() {
     );
   }
 
-  return (
-    <div className="relative min-h-dvh overflow-hidden bg-[#050818] text-slate-100">
-      <NightSky />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(ellipse_at_50%_100%,rgba(69,97,220,0.2),transparent_70%)]" />
-      <KrathongPicker
-        name={name}
-        onNameChange={handleNameChange}
-        wish={wish}
-        onWishChange={handleWishChange}
-        selectedType={selectedType}
-        onSelectType={handleSelectType}
-        onSubmit={handleLaunch}
-        error={error}
-      />
-    </div>
-  );
+  if (view === "form") {
+    return (
+      <div className="relative min-h-dvh overflow-hidden bg-[#050818] text-slate-100">
+        <NightSky />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(ellipse_at_50%_100%,rgba(69,97,220,0.2),transparent_70%)]" />
+        <KrathongPicker
+          name={name}
+          onNameChange={handleNameChange}
+          wish={wish}
+          onWishChange={handleWishChange}
+          selectedType={selectedType}
+          onSelectType={handleSelectType}
+          onSubmit={handleLaunch}
+          error={error}
+        />
+      </div>
+    );
+  }
+
+  return <HomeScene onStart={() => setView("form")} />;
 }
