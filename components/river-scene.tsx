@@ -41,9 +41,9 @@ export function RiverScene({
       onClearInteraction={feed.clearInteraction}
       own={own}
     >
-      <p className="pointer-events-none absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[400] text-[11px] text-slate-300/80">
+      {/* <p className="pointer-events-none absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[400] text-[11px] text-slate-300/80">
         กระทงในน้ำ {activeCount + 1} อัน
-      </p>
+      </p> */}
 
       <p className="pointer-events-none absolute left-3 right-24 top-[max(0.75rem,env(safe-area-inset-top))] z-[400] text-left text-[11px] leading-relaxed text-slate-300/75">
         เอาเมาส์ไปชี้หรือแตะที่กระทงเพื่อดูคำอธิษฐาน

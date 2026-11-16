@@ -62,9 +62,9 @@ export function HomeScene({ onStart }: HomeSceneProps) {
         ) : null}
       </div>
 
-      <p className="pointer-events-none absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[400] text-[11px] text-slate-300/80">
+      {/* <p className="pointer-events-none absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[400] text-[11px] text-slate-300/80">
         {feed.hasLoaded ? `กระทงในน้ำ ${activeCount} อัน` : "กำลังโหลดกระทง..."}
-      </p>
+      </p> */}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-[410] flex justify-center px-4">
         <button

@@ -209,34 +209,77 @@
 
 /* ---------- กระทงในน้ำ ---------- */
 
+/*
+ * เส้นทางลอยไปมาแบบวงโค้ง: 8 จุดต่อรอบ ใช้ linear เพื่อไม่ให้สะดุดที่จุดเปลี่ยนทิศ
+ * ระยะทางมาจาก --drift-distance (vw, มีเครื่องหมายบอกทิศ) และ y แกว่งเล็กน้อย
+ */
 @keyframes water-drift {
-  from {
-    transform: translate3d(-7px, 0, 0);
+  0% {
+    transform: translate3d(var(--drift-distance, 7vw), 0, 0);
   }
-  to {
-    transform: translate3d(7px, -2px, 0);
+  12.5% {
+    transform: translate3d(
+      calc(var(--drift-distance, 7vw) * 0.707),
+      3px,
+      0
+    );
+  }
+  25% {
+    transform: translate3d(0, 0, 0);
+  }
+  37.5% {
+    transform: translate3d(
+      calc(var(--drift-distance, 7vw) * -0.707),
+      -3px,
+      0
+    );
+  }
+  50% {
+    transform: translate3d(calc(var(--drift-distance, 7vw) * -1), 0, 0);
+  }
+  62.5% {
+    transform: translate3d(
+      calc(var(--drift-distance, 7vw) * -0.707),
+      3px,
+      0
+    );
+  }
+  75% {
+    transform: translate3d(0, 0, 0);
+  }
+  87.5% {
+    transform: translate3d(
+      calc(var(--drift-distance, 7vw) * 0.707),
+      -3px,
+      0
+    );
+  }
+  100% {
+    transform: translate3d(var(--drift-distance, 7vw), 0, 0);
   }
 }
 
 .water-drift {
-  animation: water-drift var(--drift-duration, 36s) ease-in-out infinite
-    alternate;
+  animation: water-drift var(--drift-duration, 48s) linear infinite;
   animation-delay: var(--drift-delay, 0s);
+  will-change: transform;
 }
 
 @keyframes water-bob {
   0%,
   100% {
-    transform: translateY(1px);
+    transform: translateY(1px) rotate(calc(var(--rock-angle, 2deg) * -1))
+      scale(1);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-5px) rotate(var(--rock-angle, 2deg)) scale(1.015);
   }
 }
 
 .water-bob {
-  animation: water-bob var(--bob-duration, 4.8s) ease-in-out infinite;
+  animation: water-bob var(--bob-duration, 9s) ease-in-out infinite;
   animation-delay: var(--bob-delay, 0s);
+  will-change: transform;
 }
 
 @keyframes water-ripple {
@@ -245,16 +288,16 @@
     opacity: 0.45;
   }
   70% {
-    opacity: 0.12;
+    opacity: 0.1;
   }
   100% {
-    transform: scale(1.9);
+    transform: scale(2.1);
     opacity: 0;
   }
 }
 
 .water-ripple {
-  animation: water-ripple 5.6s ease-out infinite;
+  animation: water-ripple 7.2s ease-out infinite;
   animation-delay: var(--ripple-delay, 0s);
 }
 
