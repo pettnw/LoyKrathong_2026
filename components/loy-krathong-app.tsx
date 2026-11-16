@@ -82,7 +82,7 @@ export function LoyKrathongApp() {
     setView("scene");
 
     // บันทึกลง MongoDB แบบไม่บล็อกอนิเมชั่น
-    void fetch("/api/krathong", {
+    void fetch("/LoyKrathong/api/krathong", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

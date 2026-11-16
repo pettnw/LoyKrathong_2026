@@ -172,7 +172,7 @@ export function useKrathongFeed({ excludeId = null }: UseKrathongFeedOptions = {
       controller = new AbortController();
 
       try {
-        const response = await fetch("/api/krathong", {
+        const response = await fetch("/LoyKrathong/api/krathong", {
           cache: "no-store",
           signal: controller.signal,
         });
