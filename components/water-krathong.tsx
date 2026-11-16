@@ -20,7 +20,8 @@ export type WaterKrathongData = {
 type WaterKrathongProps = {
   item: WaterKrathongData;
   left: number;
-  top: number;
+  /** เปอร์เซ็นต์ (number) หรือค่า CSS length/calc (string) */
+  top: number | string;
   width: string;
   opacity: number;
   zIndex: number;
@@ -59,7 +60,11 @@ export function WaterKrathong({
   onDeactivate,
   onToggle,
 }: WaterKrathongProps) {
-  const travelBase = [8, 12, 16, 19][row] ?? 16;
+  /*
+   * ระยะลอยต่อแถว — จำกัดให้แต่ละกระทงยังอยู่ใน "เลน" ของตัวเอง
+   * เพื่อไม่ให้ป้ายชื่อของกระทงข้างๆ ในแถวเดียวกันทับกันตอนลอยเข้าหากัน
+   */
+  const travelBase = [10, 7, 10, 7][row] ?? 10;
   // ระยะขยับไม่ให้หลุดขอบจอ — กระทงใกล้ขอบจะลอยแคบลง
   const edgeSpace = Math.max(4, Math.min(left - 6, 94 - left));
   const driftDistance = roundTo(
@@ -121,7 +126,7 @@ export function WaterKrathong({
       style={
         {
           left: `${left}%`,
-          top: `${top}%`,
+          top: typeof top === "number" ? `${top}%` : top,
           width,
           opacity,
           zIndex,

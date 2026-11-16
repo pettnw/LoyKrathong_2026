@@ -1,7 +1,10 @@
 "use client";
 
 import { RiverStage } from "@/components/river-stage";
-import { useKrathongFeed } from "@/lib/use-krathong-feed";
+import {
+  MAX_OTHERS_PER_SCREEN,
+  useKrathongFeed,
+} from "@/lib/use-krathong-feed";
 
 type HomeSceneProps = {
   onStart: () => void;
@@ -27,7 +30,7 @@ function LotusIcon({ className }: { className?: string }) {
 }
 
 export function HomeScene({ onStart }: HomeSceneProps) {
-  const feed = useKrathongFeed();
+  const feed = useKrathongFeed({ maxOthers: MAX_OTHERS_PER_SCREEN });
   const activeCount = feed.entries.filter((entry) => !entry.exiting).length;
 
   return (

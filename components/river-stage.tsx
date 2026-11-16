@@ -166,8 +166,8 @@ export function RiverStage({
         <WaterKrathong
           item={own}
           left={50}
-          top={85}
-          width="clamp(84px, 22vw, 140px)"
+          top="min(82%, calc(100% - 88px))"
+          width="clamp(76px, min(22vw, 19vh), 132px)"
           opacity={1}
           row={3}
           zIndex={70 + (activeId === own.id ? 100 : 0)}

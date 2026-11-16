@@ -3,7 +3,10 @@
 import { RiverStage } from "@/components/river-stage";
 import type { WaterKrathongData } from "@/components/water-krathong";
 import type { KrathongTypeId } from "@/lib/krathong-data";
-import { useKrathongFeed } from "@/lib/use-krathong-feed";
+import {
+  MAX_OTHERS_PER_SCREEN,
+  useKrathongFeed,
+} from "@/lib/use-krathong-feed";
 
 type RiverSceneProps = {
   name: string;
@@ -18,7 +21,12 @@ export function RiverScene({
   type,
   ownKrathongId,
 }: RiverSceneProps) {
-  const feed = useKrathongFeed({ excludeId: ownKrathongId });
+  const feed = useKrathongFeed({
+    excludeId: ownKrathongId,
+    maxOthers: MAX_OTHERS_PER_SCREEN - 1,
+  });
+  // ใช้โดยตัวนับ "กระทงในน้ำ N อัน" ที่คอมเมนต์พักไว้ชั่วคราว
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const activeCount = feed.entries.filter((entry) => !entry.exiting).length;
 
   const own: WaterKrathongData = {

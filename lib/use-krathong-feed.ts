@@ -6,15 +6,30 @@ import { isKrathongTypeId } from "@/lib/krathong-data";
 
 const POLL_INTERVAL_MS = 15_000;
 const EXIT_DURATION_MS = 2_600;
-const MAX_OTHERS = 19;
 
-const COLUMNS = [10, 30, 50, 70, 90];
+/**
+ * จำนวนกระทงของคนอื่นสูงสุดต่อหน้าจอ
+ * หน้าแรกใช้ 10 (เห็นแต่ของคนอื่น) / หน้าฉากใช้ 9 (+ กระทงของผู้ใช้ = 10)
+ */
+export const MAX_OTHERS_PER_SCREEN = 10;
 
+/*
+ * แต่ละแถวคือระดับความลึก: ยิ่งใกล้ยิ่งใหญ่ ชัดขึ้น และลอยเร็วขึ้น
+ * ความกว้างอิงทั้ง vw และ vh เพื่อไม่ให้กระทงใหญ่เกินไปบนจอแนวนอนที่เตี้ย
+ */
 const ROW_STYLES = [
-  { top: 54, width: "clamp(28px, 7vw, 42px)", opacity: 0.58 },
-  { top: 62, width: "clamp(34px, 8.2vw, 52px)", opacity: 0.7 },
-  { top: 70, width: "clamp(40px, 9.6vw, 62px)", opacity: 0.84 },
-  { top: 77, width: "clamp(46px, 11vw, 72px)", opacity: 0.95 },
+  { top: 54, width: "clamp(26px, min(7vw, 8.5vh), 42px)", opacity: 0.58 },
+  { top: 62.5, width: "clamp(32px, min(8.4vw, 10vh), 54px)", opacity: 0.7 },
+  { top: 71, width: "clamp(38px, min(9.8vw, 11.5vh), 66px)", opacity: 0.84 },
+  { top: 78, width: "clamp(44px, min(11.2vw, 13vh), 78px)", opacity: 0.95 },
+];
+
+/** ตำแหน่งแนวนอนของแต่ละแถว — เหลื่อมกันเพื่อไม่ให้ดูเป็นตาราง */
+const ROW_COLUMNS = [
+  [21, 79],
+  [12, 45, 78],
+  [26, 68],
+  [14, 50, 86],
 ];
 
 export type FeedSlot = {
@@ -25,24 +40,18 @@ export type FeedSlot = {
   row: number;
 };
 
-export const SLOT_LAYOUT: FeedSlot[] = [
-  ...ROW_STYLES.slice(0, 3).flatMap((rowStyle, row) =>
-    COLUMNS.map((left) => ({
-      left,
-      top: rowStyle.top,
-      width: rowStyle.width,
-      opacity: rowStyle.opacity,
-      row,
-    })),
-  ),
-  ...[8, 28, 72, 92].map((left) => ({
+export const SLOT_LAYOUT: FeedSlot[] = ROW_COLUMNS.flatMap((columns, row) => {
+  const style = ROW_STYLES[row];
+  if (!style) return [];
+
+  return columns.map((left) => ({
     left,
-    top: ROW_STYLES[3].top,
-    width: ROW_STYLES[3].width,
-    opacity: ROW_STYLES[3].opacity,
-    row: 3,
-  })),
-];
+    top: style.top,
+    width: style.width,
+    opacity: style.opacity,
+    row,
+  }));
+});
 
 export type FeedEntry = {
   item: WaterKrathongData;
@@ -50,7 +59,7 @@ export type FeedEntry = {
   exiting: boolean;
 };
 
-function parseFeed(data: unknown): WaterKrathongData[] {
+function parseFeed(data: unknown, limit: number): WaterKrathongData[] {
   if (!Array.isArray(data)) return [];
 
   const items: WaterKrathongData[] = [];
@@ -77,26 +86,27 @@ function parseFeed(data: unknown): WaterKrathongData[] {
     });
   }
 
-  return items.slice(0, 20);
+  return items.slice(0, limit);
 }
 
 /**
  * รวมกระทงใหม่เข้ากับรายการเดิมโดยไม่สลับตำแหน่ง
- * ถ้าคนอื่นครบ 19 อันแล้ว ให้อันเก่าสุดถูกทำเครื่องหมาย exiting
+ * ถ้าคนอื่นครบ maxOthers อันแล้ว ให้อันเก่าสุดถูกทำเครื่องหมาย exiting
  */
 function mergeEntries(
   current: FeedEntry[],
   incoming: WaterKrathongData[],
+  maxOthers: number,
 ): { entries: FeedEntry[]; exitingIds: string[] } {
   const known = new Set(current.map((entry) => entry.item.id));
   const fresh = incoming
     .filter((item) => !known.has(item.id))
-    .slice(0, MAX_OTHERS);
+    .slice(0, maxOthers);
 
   if (fresh.length === 0) return { entries: current, exitingIds: [] };
 
   const active = current.filter((entry) => !entry.exiting);
-  const overflow = Math.max(0, active.length + fresh.length - MAX_OTHERS);
+  const overflow = Math.max(0, active.length + fresh.length - maxOthers);
   const exitingIds = active.slice(0, overflow).map((entry) => entry.item.id);
   const exitingSet = new Set(exitingIds);
 
@@ -122,14 +132,20 @@ function mergeEntries(
 type UseKrathongFeedOptions = {
   /** ไม่ต้องแสดงกระทงนี้ในฟีด (ใช้กับกระทงของผู้ใช้เองในหน้าฉาก) */
   excludeId?: string | null;
+  /** จำนวนกระทงของคนอื่นสูงสุดที่แสดงบนจอ (default 10) */
+  maxOthers?: number;
 };
 
-export function useKrathongFeed({ excludeId = null }: UseKrathongFeedOptions = {}) {
+export function useKrathongFeed({
+  excludeId = null,
+  maxOthers = MAX_OTHERS_PER_SCREEN,
+}: UseKrathongFeedOptions = {}) {
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [pinnedId, setPinnedId] = useState<string | null>(null);
   const excludeIdRef = useRef(excludeId);
+  const maxOthersRef = useRef(maxOthers);
   const entriesRef = useRef<FeedEntry[]>([]);
 
   const activeId = hoveredId ?? pinnedId;
@@ -137,6 +153,10 @@ export function useKrathongFeed({ excludeId = null }: UseKrathongFeedOptions = {
   useEffect(() => {
     excludeIdRef.current = excludeId;
   }, [excludeId]);
+
+  useEffect(() => {
+    maxOthersRef.current = maxOthers;
+  }, [maxOthers]);
 
   useEffect(() => {
     if (!excludeId) return;
@@ -170,6 +190,7 @@ export function useKrathongFeed({ excludeId = null }: UseKrathongFeedOptions = {
     const load = async () => {
       controller?.abort();
       controller = new AbortController();
+      const limit = maxOthersRef.current;
 
       try {
         const response = await fetch("/LoyKrathong/api/krathong", {
@@ -181,17 +202,17 @@ export function useKrathongFeed({ excludeId = null }: UseKrathongFeedOptions = {
         const data: unknown = await response.json();
         if (cancelled) return;
 
-        const feed = parseFeed(data).filter(
+        const feed = parseFeed(data, limit).filter(
           (item) => item.id !== excludeIdRef.current && !seen.has(item.id),
         );
         for (const item of feed) seen.add(item.id);
 
         const incoming =
           entriesRef.current.length === 0
-            ? feed.slice(0, MAX_OTHERS).reverse()
+            ? feed.slice(0, limit).reverse()
             : feed;
 
-        const result = mergeEntries(entriesRef.current, incoming);
+        const result = mergeEntries(entriesRef.current, incoming, limit);
         entriesRef.current = result.entries;
         setEntries(result.entries);
 
