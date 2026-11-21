@@ -67,6 +67,27 @@ export function isKrathongTypeId(value: unknown): value is KrathongTypeId {
   );
 }
 
+/**
+ * สร้าง id ชั่วคราวฝั่งเบราว์เซอร์จากข้อมูลที่โชว์บนจออยู่แล้ว
+ * ใช้แทน _id ของ MongoDB ที่ API ตัดออกเพื่อความเป็นส่วนตัว
+ * ค่าเดิมจะได้ id เดิมเสมอ จึงใช้ติดตามกระทงข้ามการ poll และเป็น seed ของแอนิเมชันได้
+ */
+export function krathongClientId(
+  name: string,
+  wish: string,
+  type: KrathongTypeId,
+): string {
+  const seed = `${name}\u0000${wish}\u0000${type}`;
+  let hash = 2166136261; // FNV-1a
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return `k${(hash >>> 0).toString(36)}`;
+}
+
 /** ตัดช่องว่างหัวท้ายและยุบช่องว่างซ้ำให้เหลือช่องเดียว */
 export function normalizeText(raw: string): string {
   return raw.replace(/\s+/g, " ").trim();

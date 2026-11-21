@@ -36,22 +36,18 @@ export async function GET(request: Request) {
       .find(
         {},
         {
-          projection: { name: 1, wish: 1, krathongType: 1, createdAt: 1 },
+          // ส่งเฉพาะข้อมูลที่โชว์บนจอ — ไม่เปิดเผย _id / createdAt
+          projection: { name: 1, wish: 1, krathongType: 1 },
         },
       )
       .sort({ createdAt: -1 })
-      .limit(20)
+      .limit(10)
       .toArray();
 
     const items = documents.map((document) => ({
-      id: document._id.toString(),
       name: document.name,
       wish: document.wish ?? "",
       krathongType: document.krathongType,
-      createdAt:
-        document.createdAt instanceof Date
-          ? document.createdAt.toISOString()
-          : new Date(document.createdAt).toISOString(),
     }));
 
     return NextResponse.json(items, { headers: NO_STORE_HEADERS });
@@ -141,16 +137,11 @@ export async function POST(request: Request) {
       createdAt: new Date(),
     };
 
-    const result = await collection.insertOne(document);
+    await collection.insertOne(document);
 
+    // ไม่ต้องคืน id/createdAt — หน้าเว็บสร้าง id ชั่วคราวเองจากข้อมูลที่โชว์อยู่แล้ว
     return NextResponse.json(
-      {
-        id: result.insertedId.toString(),
-        name: document.name,
-        wish: document.wish,
-        krathongType: document.krathongType,
-        createdAt: document.createdAt.toISOString(),
-      },
+      { ok: true },
       { status: 201, headers: NO_STORE_HEADERS },
     );
   } catch {

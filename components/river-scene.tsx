@@ -34,7 +34,6 @@ export function RiverScene({
     name,
     wish,
     krathongType: type,
-    createdAt: "",
     isOwn: true,
   };
 

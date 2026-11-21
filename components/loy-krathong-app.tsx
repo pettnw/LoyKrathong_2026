@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { HomeScene } from "@/components/home-scene";
 import { KrathongPicker } from "@/components/krathong-picker";
 import { NightSky } from "@/components/night-sky";
 import { RiverScene } from "@/components/river-scene";
 import {
+  krathongClientId,
   validateName,
   validateWish,
   type KrathongTypeId,
@@ -29,8 +30,6 @@ export function LoyKrathongApp() {
   );
   const [error, setError] = useState<string | null>(null);
   const [scene, setScene] = useState<SceneState | null>(null);
-  const [ownKrathongId, setOwnKrathongId] = useState<string | null>(null);
-  const activeSceneKey = useRef(0);
 
   const handleNameChange = (value: string) => {
     setName(value);
@@ -68,11 +67,9 @@ export function LoyKrathongApp() {
     }
 
     const sceneKey = Date.now();
-    activeSceneKey.current = sceneKey;
     setError(null);
     setName(nameValidation.name);
     setWish(wishValidation.wish);
-    setOwnKrathongId(null);
     setScene({
       key: sceneKey,
       name: nameValidation.name,
@@ -90,22 +87,9 @@ export function LoyKrathongApp() {
         wish: wishValidation.wish,
         krathongType: selectedType,
       }),
-    })
-      .then(async (response) => {
-        if (!response.ok) return null;
-        const data: unknown = await response.json();
-        if (typeof data !== "object" || data === null) return null;
-        const id = (data as { id?: unknown }).id;
-        return typeof id === "string" ? id : null;
-      })
-      .then((id) => {
-        if (id && activeSceneKey.current === sceneKey) {
-          setOwnKrathongId(id);
-        }
-      })
-      .catch(() => {
-        // ต่อ DB ไม่ได้ก็ยังลอยกระทงได้
-      });
+    }).catch(() => {
+      // ต่อ DB ไม่ได้ก็ยังลอยกระทงได้
+    });
   };
 
   if (view === "scene" && scene) {
@@ -115,7 +99,7 @@ export function LoyKrathongApp() {
         name={scene.name}
         wish={scene.wish}
         type={scene.type}
-        ownKrathongId={ownKrathongId}
+        ownKrathongId={krathongClientId(scene.name, scene.wish, scene.type)}
       />
     );
   }

@@ -13,7 +13,6 @@ export type WaterKrathongData = {
   name: string;
   wish: string;
   krathongType: KrathongTypeId;
-  createdAt: string;
   isOwn?: boolean;
 };
 

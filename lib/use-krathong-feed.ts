@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { WaterKrathongData } from "@/components/water-krathong";
-import { isKrathongTypeId } from "@/lib/krathong-data";
+import { isKrathongTypeId, krathongClientId } from "@/lib/krathong-data";
 
 const POLL_INTERVAL_MS = 15_000;
 const EXIT_DURATION_MS = 2_600;
@@ -64,25 +64,32 @@ function parseFeed(data: unknown, limit: number): WaterKrathongData[] {
 
   const items: WaterKrathongData[] = [];
   const seen = new Set<string>();
+  // กันกรณีคนละคนกรอกชื่อ+คำอธิษฐาน+ชนิดกระทงเหมือนกันเป๊ะ
+  const occurrences = new Map<string, number>();
 
   for (const entry of data) {
     if (typeof entry !== "object" || entry === null) continue;
 
     const record = entry as Record<string, unknown>;
-    if (typeof record.id !== "string" || typeof record.name !== "string") {
-      continue;
-    }
+    if (typeof record.name !== "string") continue;
     if (!isKrathongTypeId(record.krathongType)) continue;
-    if (seen.has(record.id)) continue;
 
-    seen.add(record.id);
+    const baseId = krathongClientId(
+      record.name,
+      typeof record.wish === "string" ? record.wish : "",
+      record.krathongType,
+    );
+    const duplicateIndex = occurrences.get(baseId) ?? 0;
+    occurrences.set(baseId, duplicateIndex + 1);
+    const id = duplicateIndex === 0 ? baseId : `${baseId}-${duplicateIndex}`;
+    if (seen.has(id)) continue;
+
+    seen.add(id);
     items.push({
-      id: record.id,
+      id,
       name: record.name,
       wish: typeof record.wish === "string" ? record.wish : "",
       krathongType: record.krathongType,
-      createdAt:
-        typeof record.createdAt === "string" ? record.createdAt : "",
     });
   }
 
